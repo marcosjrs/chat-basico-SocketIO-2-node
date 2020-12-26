@@ -17,9 +17,14 @@ const servidor = app.listen(app.get('port'), () => {
 //Socket.io conexion al servidor express y listenings
 const socketIo = require('socket.io');
 io = socketIo(servidor);
-io.on('connection', (infoSocket) => {
-    console.log('Nueva conexión', infoSocket.id);
+io.on('connection', (conexion) => {
+    console.log('Nueva conexión', conexion.id);
+    conexion.on('chat:mensaje', (mensaje) => {
+        //Enviamos el mensaje a todos los que están conectados a este servidor de socket
+        io.sockets.emit('chat:nuevomensaje', mensaje);
+    });
 });
+
 
 
 

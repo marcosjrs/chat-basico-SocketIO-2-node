@@ -7,8 +7,27 @@ const enviar = document.getElementById('enviar');
 const mensajes = document.getElementById('mensajes');
 const estado = document.getElementById('estado');
 
-enviar.addEventListener('click', function(evt){
-    console.log(usuario.value, mensaje.value);
+enviar.addEventListener('click', function (evt) {
+    //emitimos el evento para que lo capture el servidor, luego el servidor emitirá otro evento de nuevomensaje
+    // que lo escucharán todos los clientes, para actualizar el chat de cada uno.
+    socket.emit(
+        'chat:mensaje',
+        { usuario: usuario.value, mensaje: mensaje.value }
+    );
+});
+
+// Escuchamos el evento emitido por el servidor, que lo emite cuando se le envia un mensaje nuevo
+// desde algún cliente.
+socket.on('chat:nuevomensaje', function(mensaje){
+    console.log(mensaje);
+    mensajes.innerHTML += `<li class="left clearfix">
+        <div class="chat-body clearfix">
+            <div class="header">
+                <strong class="primary-font">${mensaje.usuario}</strong>
+            </div>
+            <p>${mensaje.mensaje}</p>
+        </div>
+    </li>`; 
 });
 
 

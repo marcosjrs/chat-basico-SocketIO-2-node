@@ -17,11 +17,28 @@ const servidor = app.listen(app.get('port'), () => {
 //Socket.io conexion al servidor express y listenings
 const socketIo = require('socket.io');
 io = socketIo(servidor);
-io.on('connection', (conexion) => {
-    console.log('Nueva conexión', conexion.id);
-    conexion.on('chat:mensaje', (mensaje) => {
+io.on('connection', (conexionDeUnCliente) => {
+
+    console.log('Nueva conexión', conexionDeUnCliente.id);
+    //Enviando eventos al cliente
+    conexionDeUnCliente.emit('chat:informacionDesdeServidor', {
+        version: '0.0.1',
+        texto: 'Bienvenido a esta aplicación'
+    });
+
+    conexionDeUnCliente.on('chat:mensaje', (mensaje, callbackDeCliente) => {
         //Enviamos el mensaje a todos los que están conectados a este servidor de socket
         io.sockets.emit('chat:nuevomensaje', mensaje);
+        //LLamamos a la función que nos indica el cliente (se ejecutará en el cliente)
+        let ok = false;
+        if (mensaje.usuario && mensaje.mensaje) {
+            ok = true;
+        }
+        callbackDeCliente({ ok });
+    });
+
+    conexionDeUnCliente.on('disconnect', (mensaje) => {
+        console.log('[Cliente perdió o cerró la conexión con este servidor]');
     });
 });
 

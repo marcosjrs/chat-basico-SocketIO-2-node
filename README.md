@@ -5,8 +5,7 @@ Está basado en un curso de Fatz.
 
 Librerías 
 =========
-npm i express socket.io@~2
-npm i nodemon -D
+express, socket.io@~2 y nodemon
 
 Ejecuciones
 ===========
